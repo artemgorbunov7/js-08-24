@@ -24,10 +24,23 @@ const stuffingParam = {
     },
 }
 
+const toppingParam = {
+    sauce: { 
+        price: 15,
+        calories: 0,
+    },
+    mayonnaise: { 
+        price: 20,
+        calories: 5,
+    },
+}
+
 class Hamburger {
-    constructor(size, stuffing) {
+    constructor(size, stuffing, toppings) {
+        //TODO добавить проверку на size и stuff
        this.size = size;
        this.stuffing = stuffing; 
+       this.toppings = toppings;
     }
     addTopping(topping) {    // Добавить добавку 
     
@@ -45,9 +58,13 @@ class Hamburger {
     
     }
     calculatePrice() {       // Узнать цену 
-    
+        let toppingPrice = 0;
+        /* this.toppings.reduce((acc, curr) => {
+            return toppingPrice = acc + curr.price;
+        }, 0); */
+        return sizeParam[this.size].price + stuffingParam[this.stuffing].price + toppingPrice;
     }
     calculateCalories() {    // Узнать калорийность 
-    
+        return sizeParam[this.size].calories + stuffingParam[this.stuffing].calories;
     }
 }

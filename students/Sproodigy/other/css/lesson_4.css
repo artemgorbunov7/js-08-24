@@ -1,0 +1,169 @@
+hr {
+	width: 100%;
+}
+
+.string {
+	width: 70%;
+	margin: 0 auto;
+	font-size: 1.2em;
+	line-height: 1.6em;
+	box-shadow: 0 0px 8px 2px;
+	border-radius: 8px;
+	padding: 1em;
+	box-sizing: border-box;
+}
+
+.not-change {
+	color: #fff;
+}
+
+.btn {
+	display: block;
+	margin: 2em auto;
+	padding: .5em;
+	border: none;
+	font-size: 1.2em;
+	cursor: pointer;
+	width: 35%;
+	border-radius: 8px;
+	color: #fff;
+	background: #A64800;
+	box-shadow: 0 0 3px 3px #000;
+	transition: all .5s ease;
+}
+
+.btn:hover,
+.btn_submit:focus {
+	background: #FF6F00;
+	color: #000;
+	box-shadow: 0 0 3px 3px #fff;
+}
+
+.form {
+	position: relative;
+	width: 40%;
+	margin: 2rem auto;
+}
+
+.form__wrp {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+}
+
+.form__wrp_invalid::before {
+	content: '';
+	position: absolute;
+	top: 37%;
+	right: -30px;
+	border: 19px solid transparent;
+	border-right: 19px solid red;
+}
+
+.form__wrp_invalid::after {
+	content: 'Input is invalid';
+	padding: 5px;
+	position: absolute;
+	right: -177px;
+	bottom: 29%;
+	background: #fff;
+	color: #d70d0d;
+	border: 2px solid red;
+	font-style: italic;
+	font-weight: bold;
+}
+
+.form__fieldset {
+	padding: 2rem 2rem 2rem;
+	display: flex;
+	flex-direction: column;
+	border-radius: 15px;
+	border: 3px solid #000;
+}
+
+.form__legend {
+	font-size: 2em;
+}
+
+.form__label {
+	font-size: 1.3em;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.form__input {
+	position: relative;
+	color: #fff;
+	background: #05296E;
+	box-shadow: 0 0 3px 3px #000;
+	margin: 0.3em 0 1em;
+	padding: .6em;
+	border: none;
+	border-radius: 5px;
+	font-size: 1.5em;
+	transition: background-color .5s ease, color .5s ease, box-shadow .5s ease;
+}
+
+.form__input:focus {
+	background: #FFDC40;
+	color: #000;
+	box-shadow: 0 0 3px 3px #05296E;
+}
+
+.form__input_invalid,
+.form__input_invalid:focus {
+	box-shadow: 0 0 3px 3px red;
+}
+
+.form__input_invalid::after {
+	content: 'Invalid';
+	position: absolute;
+	top: 50%;
+}
+
+.form__message {
+	resize: vertical;
+	min-height: 3em;
+	font-family: inherit;
+}
+
+.btn_submit {
+	margin: .6em 0;
+	font-size: 1.5em;
+	width: 100%;
+}
+
+@media only screen and (max-width: 768px) {
+	.string,
+	.form {
+		width: 100%;
+	}
+}
+
+@media only screen and (max-width: 1280px) {
+	body {
+		font-size: .8em;
+	}
+
+	.form__wrp_invalid::before {
+		content: '';
+		position: absolute;
+		top: 40%;
+		right: -20px;
+		border: 13px solid transparent;
+		border-right: 13px solid red;
+	}
+
+	.form__wrp_invalid::after {
+		content: 'Input is invalid';
+		padding: 1px 5px;
+		position: absolute;
+		right: -137px;
+		bottom: 33%;
+		background: #fff;
+		color: #d70d0d;
+		border: 2px solid red;
+		font-style: italic;
+		font-weight: bold;
+	}
+}

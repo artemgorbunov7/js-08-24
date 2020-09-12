@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/lessons_style.css">
+    <link rel="stylesheet" href="../css/lesson_4.css">
+    <title>Lesson 4</title>
+  </head>
+  <body>
+    <main class="main-lesson">
+      <div class="string">
+        At the end he came up to the lecturer (who happened to be me), beaming with the primal joy of discovery:
+        'Gee', he exulted, 'this evolution! It really makes sense.' It certainly does. In the words of a teeshirt
+         which an anonymous American reader was kind enough to send me:
+        'Evolution — The Greatest Show on Earth — The Only Game in Town!'
+        ...If anyone <span class='not-change'>doesn't</span> agree that this amount of complex design cries out for an explanation,
+        I give up. No, on second thoughts I <span class='not-change'>don't</span> give up,
+        because one of my aims in the book is to convey something of the sheer wonder of biological complexity to those
+        whose eyes have not been opened to it. But having built up the mystery,
+        my other main aim is to remove it again by explaining the solution.
+      </div>
+      <button class="btn">Change quotes</button>
+      <hr>
+      <form class="form" action="#">
+        <fieldset class="form__fieldset ">
+          <legend class="form__legend">Form</legend>
+          <div class="form__wrp">
+            <label class="form__label" for="name">Name:</label>
+            <input id="name" class="form__input" type="text" name="name"
+              pattern="[A-za-zА-Яа-я]+" oninput="checkInputField(this)"
+              autofocus required
+             >
+          </div>
+          <div class="form__wrp">
+            <label class="form__label" for="tel">Tel:</label>
+            <input id="tel" class="form__input" type="tel" name="tel"
+              pattern="^(\+\d{1}\(\d{3}\)\d{3}-\d{4})$"
+              oninput="checkInputField(this)"
+              required
+             >
+          </div>
+          <div class="form__wrp">
+            <label class="form__label" for="email">E-mail:</label>
+            <input id="email" class="form__input" type="email" name="email"
+              pattern="^([a-z0-9_\.-]+)@([a-z0-9_\.-]+)\.([a-z\.]{2,6})$"
+              oninput="checkInputField(this)"
+              required
+            >
+          </div>
+          <div class="form__wrp">
+            <label class="form__label" for="message">Message:</label>
+            <textarea id="message" class="form__input form__message" name="textarea" rows="8"></textarea>
+          </div>
+          <input class="btn btn_submit" type="submit" name="submit" value="Submit" onclick="checkInputFields()">
+        </fieldset>
+      </form>
+    </main>
+    <script src="../js/lesson_4.js"></script>
+  </body>
+</html>

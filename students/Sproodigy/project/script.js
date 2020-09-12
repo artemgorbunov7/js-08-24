@@ -1,67 +1,176 @@
+const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses'
+
+function makeGETRequestPromise(url) {
+  return new Promise((resolve, reject) => {
+    let xhr
+
+    if (window.XMLHttpRequest) {
+      xhr = new XMLHttpRequest()
+    } else if (window.ActiveXObject) {
+      xhr = new ActiveXObject("Microsoft.XMLHTTP")
+    }
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        resolve(JSON.parse(xhr.responseText))
+      }
+    }
+
+    xhr.open('GET', url, true)
+    xhr.send()
+  })
+}
+
 class GoodsItem {
-  constructor(title, price) {
-    this.title = title;
-    this.price = price;
+  constructor(product_id, product_name, price) {
+    this.id = product_id
+    this.title = product_name
+    this.price = price
   }
 
   render() {
-    return `<div class="goods-item"><h3>Name: ${this.title}</h3><p>Price: ${this.price}&#36;</p></div>`;
+    return `
+      <div class="goods-item" data-id="${this.id}">
+        <h3><b>Name: </b>${this.title}</h3>
+        <p><b>Price: </b>${this.price}&#36;</p>
+        <button class="goods-item__btn" name="add-to-cart">Buy</button>
+        <button class="goods-item__btn" name="remove-from-cart">Remove</button>
+      </div>
+    `
   }
 }
 
 class GoodsList {
-  constructor() {
-    this.goods = [];
+  constructor(cart) {
+    this.goods = []
+    this.filteredGoods = []
+    this.cart = cart
     this.totalPrice = 0
+    this.fetchGoodsPromise()
+      .then(() => this.render())
+
+    document.querySelector('.goods-list').addEventListener('click', (event) => {
+      if (event.target.name === 'add-to-cart') {
+        const id = event.target.parentElement.dataset.id
+        const item = this.goods.find((goodsItem) => goodsItem.id_product === parseInt(id))
+
+        this.cart.add({...item, quantity: 1})
+      }
+    })
+
+    document.querySelector('.goods-list').addEventListener('click', (event) => {
+      if (event.target.name === 'remove-from-cart') {
+        const id = event.target.parentElement.dataset.id
+        this.cart.remove(parseInt(id))
+      }
+    })
+
+    document.querySelector('.search').addEventListener('input', (event) => {
+      this.filterGoods(event.target.value)
+    })
+
   }
 
-  fetchGoods() {
-    this.goods = [
-      { title: 'Shirt', price: 150 },
-      { title: 'Socks', price: 50 },
-      { title: 'Jacket', price: 350 },
-      { title: 'Shoes', price: 250 },
-    ];
+  fetchGoodsPromise() {
+    return new Promise((resolve, reject) => {
+      makeGETRequestPromise(`${API_URL}/catalogData.json`)
+      .then(res => {
+        this.goods = res
+        this.filteredGoods = res
+        resolve()
+      })
+    })
+  }
+
+  filterGoods(value) {
+    const regexp = new RegExp(value, 'i')
+    this.filteredGoods = this.goods.filter(item => regexp.test(item.product_name))
+    this.render()
   }
 
   _calcTotalPrice() {
-    this.goods.forEach((good) => this.totalPrice += good.price)
+    this.totalPrice = 0
+    this.filteredGoods.forEach((good) => this.totalPrice += good.price)
   }
 
   _renderTotalPrice() {
     this._calcTotalPrice()
-    return `<div class="total-price"><b>Total price:</b> ${this.totalPrice}&#36;</div>`;
+    return `
+      <div class="total-price">
+        <b>Total price:</b> ${this.totalPrice}&#36;
+      </div>
+    `
   }
 
   render() {
     let listHtml = '';
-    this.goods.forEach((good) => {
-      const goodItem = new GoodsItem(good.title, good.price);
+    this.filteredGoods.forEach(good => {
+      const goodItem = new GoodsItem(good.id_product, good.product_name, good.price);
       listHtml += goodItem.render();
     });
-    document.querySelector('.goods-list').innerHTML = listHtml;
-    document.querySelector('.goods-list').innerHTML += this._renderTotalPrice();
+    document.querySelector('.goods-list').innerHTML = listHtml + this._renderTotalPrice();
+  }
+}
+
+class Cart {
+  constructor() {
+    this.cart = []
+  }
+
+  add(product) {
+    const itemIndex = this.cart.findIndex(item => item.id_product === product.id_product)
+    if (itemIndex !== -1) this.cart[itemIndex].quantity++
+    else this.cart.push(product)
+    this.render()
+  }
+
+  remove(id) {
+    const itemIndex = this.cart.findIndex(item => item.id_product === id)
+    if (itemIndex !== -1) this.cart.splice(itemIndex, 1)
+    this.render()
+  }
+
+  total() {
+    return this.cart
+  }
+
+  render() {
+    const cartPlace = document.querySelector('.cart')
+
+    if (cartPlace) cartPlace.innerHTML = ''
+
+    this.cart.forEach(item => {
+      cartPlace.innerHTML += new CartItem(item).render()
+    })
   }
 }
 
 class CartItem {
-  constructor() {}
-  increaseQuantity() {}
-  decreaseQuantity() {}
-  calcTotalSum() {}
-  calcTotalQuantity() {}
-  remove() {}
-  render() {}
+  constructor(item) {
+    this.title = item.product_name
+    this.price = item.price
+    this.quantity = item.quantity
+  }
+
+  addItem() {
+  }
+
+  removeItem() {
+  }
+
+  addQuantity() {
+  }
+
+  render() {
+    return `
+      <div class="cart__item">
+        <h4><b>Name: </b>${this.title}</h4>
+        <p><b>Price: </b>${this.price}&#36;</p>
+        <p class="quantity"><b>Quantity: </b>${this.quantity}</p>
+      </div>
+    `
+  }
 }
 
-class Cart {
-  constructor() {}
-  calcTotalPrice() {}
-  calcTotalQuantity() {}
-  clear() {}
-  render() {}
-}
-
-const list = new GoodsList();
-list.fetchGoods();
-list.render();
+const cart = new Cart()
+const list = new GoodsList(cart)

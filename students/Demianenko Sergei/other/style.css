@@ -4,11 +4,12 @@
 }
 
 body {
+    font-family: Montserrat;
     background-color: #d6d6d6;
 }
 
 header {
-    background-color: #979797;
+    background-color: #a8a7a7;
     padding-top: 10px;
     padding-bottom: 10px; 
     padding-right: 10px;
@@ -24,6 +25,7 @@ header {
     width: 70px;
     height: 25px;
     line-height: 25px;
+    margin-right: 10px;
 }
 main {
     padding-top: 10px;
@@ -36,8 +38,20 @@ main {
 }
 
 .goods-item {
-border: 1px solid black;
-text-align: center;
-box-shadow: 0 0 2px 1px black;
-padding: 5px 5px;
+    width: 100px;
+    height: 100px;
+    background-color: #f2efef;
+    border: 1px solid black;
+    text-align: center;
+    box-shadow: 0 0 5px black;
+    padding: 5px 5px;
+}
+.goods-item button {
+    margin-top: 10px;
+    width: 60px;
+    height: 25px;
+}
+
+.goods-item p {
+    margin-top: 10px;
 }

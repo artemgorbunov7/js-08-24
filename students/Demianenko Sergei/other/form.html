@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="form.css"> 
+
+    <title>Document</title>
+</head>
+<body>
+    <form action="#" method="POST" id="myform">
+<div>
+    <label for="name" id="name" >
+        <input type="text" name="name" placeholder="Имя">
+    </label>
+    </div>
+<div>
+    <label for="phone" id="phone">
+        <input type="tel" name="phone" placeholder="+7 (000)000-000">
+    </label>
+</div>
+<div>
+    <label for="email" id="email">
+        <input type="email" name="email" placeholder="e-mail">
+    </label>
+</div>
+<div>
+    <label for="massage" id="massage">
+        <textarea name="massage" id="" cols="30" rows="10" placeholder="Текст сообщения"></textarea>
+    </label>
+</div>
+<button class="button" id="val-btn">Отправить</button>
+    </form>
+    <script defer src="form.js"></script>
+    <script>
+        window.onload =() => {
+            document.getElementById("myform").addEventListener("submit", e =>{
+                let valid = new Validation("myform");
+                if (!valid.valid){e.preventDefault();}
+            })
+        }
+    </script>
+</body>
+</html>

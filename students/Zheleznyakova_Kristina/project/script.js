@@ -1,13 +1,16 @@
-class GoodsItem {
-    constructor({ title, price }) {
-        this.title = title;
+class GoodsItem 
+{
+    constructor({ product_name, price }) 
+    {
+        this.product_name = product_name;
         this.price = price;
     }
 
-    render() {
+    render() 
+    {
         return `
             <div class="goods-item">
-                <h3>${this.title}</h3>
+                <h3>${this.product_name}</h3>
                 <p>${this.price}</p>
                 <button class='btn_inBasket'>В корзину</button>
             </div>
@@ -16,24 +19,55 @@ class GoodsItem {
 }
 
 
-class GoodsList {
-    constructor() {
+const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
+
+function makeGETRequest(url) 
+{
+    return new Promise((resolve) => 
+    {
+        var xhr;
+
+        if (window.XMLHttpRequest) 
+        {
+            xhr = new XMLHttpRequest();
+        } else if (window.ActiveXObject) 
+        {
+            xhr = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        xhr.open('GET', url, true);
+        xhr.send();
+        
+        xhr.onreadystatechange = () => {if (xhr.readyState === 4) resolve(xhr.responseText)};
+    })
+}
+
+
+class GoodsList 
+{
+    constructor() 
+    {
         this.goods = [];
     }
 
-    fetchGoods() {
-        this.goods = [
-            { title: 'Shirt', price: 150 },
-            { title: 'Socks', price: 50 },
-            { title: 'Jacket', price: 350 },
-            { title: 'Shoes', price: 250 },
-        ];
-    }
+    fetchGoods() 
+    {
+        return new Promise((resolve, reject) => 
+        {
+            let x = makeGETRequest(`${API_URL}/catalogData.json`);
 
-    render() {
+            try        { resolve(x); }
+            catch(err) { reject(err); }
+        })
+
+    }
+        
+    render() 
+    {
         let listHtml = '';
 
-        this.goods.forEach(good => {
+        this.goods.forEach(good => 
+        {
             const goodItem = new GoodsItem(good);
             listHtml       += goodItem.render();
         });
@@ -41,42 +75,53 @@ class GoodsList {
         document.querySelector('.goods-list').innerHTML = listHtml;
     }        
 
-    to_sum_prices() {
-        let sum_prices = this.goods.reduce(function (a, b) {
-           return a + b.price
-        }, 0);
+    to_sum_prices() 
+    {
+        let sum_prices = this.goods.reduce((a, b) => a + b.price, 0);
 
         return sum_prices;
     }
 
     /**
-     * При нажатии кнопки 'В корзину' создается корзина.
+     * При нажатии кнопки 'В корзину' добавляется в список корзины 1 позиция товара, выводится список в консоль.
      */
-    create_basket() {
-        let btn    = document.getElementsByClassName('btn_inBasket');
-        let basket = new Basket()
+    add_to_basket() 
+    {
+        const btn = document.getElementsByClassName('btn_inBasket');
 
-        btn.addEventListener('click', () => basket.create());
+        for (let i = 0; i < btn.length; i++) {
+            btn[i].addEventListener('click', () => {
+                console.log("Clicked index: " + i); 
+
+                basket_.add(this.goods[i]);
+                basket_.get_list_basket();                   
+            });
+        }
     }
 }
 
 
-class Elem_basket {
-    constructor({ title, price, index=1 }) {
-        this.title = title;
+class Elem_basket 
+{
+    constructor({ id_product, product_name, price, count }) 
+    {
+        this.id    = id_product;
+        this.name  = product_name;
         this.price = price;
-        this.index = index;
+        this.count = count;
     }
 
     /**
      * Создает разметку одной строки позиции товара в корзине.
      */
-    render() {
+    render() 
+    {
         return `
             <div class="basket-item">
-                <div>${this.index}</div>
-                <div>${this.title}</div>
+                <div>${this.id}</div>
+                <div>${this.name}</div>
                 <div>${this.price}</div>
+                <div>${this.count}</div>
                 <button>Delete</button>
             </div>
         `;
@@ -84,17 +129,64 @@ class Elem_basket {
 }
 
 
-class Basket {
-    constructor(title, price, index) {
-        this.title = title;
-        this.price = price;
-        this.index = index;
+class Basket 
+{
+    constructor() 
+    {
+        this.list_basket = [];
+    }
+
+    /**
+     * Добавляет позицию товара в список корзины при нажатии соответствующей кнопки в карточке товара.
+     * Если позиция товара существует в списке => увеличивается count.
+     */
+    add({ id_product, product_name, price })
+    {
+        let finded = false;
+
+        for (let i = 0; i < this.list_basket.length; i++) {
+            if (this.list_basket[i].id == id_product) {                    
+                this.list_basket[i].count += 1;
+                finded                     = true;
+            } 
+        }
+
+        if (!finded) {
+            this.list_basket.push({ id: id_product, name: product_name, price: price, count: 1 }); 
+        }        
+    }
+    
+    /**
+     * Удаляет позицию товара из корзины при нажатии соответствующей кнопки.
+     * Если добавлено несколько позиций, то сначала уменьшается count товара.
+     */
+    remove_item({ id_product }) 
+    {    
+        this.list_basket.forEach((elem) => {
+            if (elem.id === id_product && elem.count > 1) {
+                elem.count -=1;
+
+                console.log('-1 count');
+            } else if (elem.id === id_product && elem.count == 1) {
+                this.list_basket.splice(elem, 1);
+
+                console.log('delete');
+            }
+        })
+        
+        return this.list_basket;
+    }
+
+    get_list_basket()
+    {
+        return console.log(this.list_basket);
     }
 
     /**
      * Создает структуру корзины.
      */
-    create_div(parent=document.main) {
+    create_div(parent=document.main) 
+    {
         let div         = document.createElement('div');        
         div.className   = 'basket';
         let div_title   = this.create_title();
@@ -111,11 +203,12 @@ class Basket {
     /**
      * Создает разметку заголовка корзины.
      */
-    create_title() {
+    create_title() 
+    {
         return `
         <div class="basket-title">
-            <div>Index</div>
-            <div>Title</div>
+            <div>Id</div>
+            <div>Name</div>
             <div>Price</div>
             <div>Amount</div>
         </div>
@@ -125,7 +218,8 @@ class Basket {
     /**
      * Создает разметку футера корзины.
      */
-    create_footer() {
+    create_footer() 
+    {
         return `
         <div class="basket-footer">
             <div class='foot-left'>Sum total</div>
@@ -137,37 +231,37 @@ class Basket {
     /**
      * Увеличение количества позиций товара в корзине.
      */
-    increase_quantity() {
-
-    }
-
-    /**
-     * Удаляет позицию товара из корзины при нажатии соответствующей кнопки.
-     * Если добавлено несколько позиций, то сначала уменьшается количество товара.
-     */
-    clear_item() {
+    increase_quantity() 
+    {
 
     }
 
     /**
      * Удаляет корзину, если она пустая.
      */
-    clear_basket() {
+    remove_basket() 
+    {
 
     }
 
     /**
      * Суммирует общую стоимость позиций в корзине.
      */
-    sum_prices() {
+    sum_prices() 
+    {
 
     }
 }
 
 
-const list = new GoodsList();
+const list    = new GoodsList();
+const basket_ = new Basket();
 
-list.fetchGoods();
-list.render();
-console.log(list.to_sum_prices());
-
+list.fetchGoods().then( 
+    resolve => {
+        list.goods = JSON.parse(resolve);
+    
+        list.render();
+        list.add_to_basket();
+    }
+)

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue lesson</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js" defer></script>
+    <script src="script.js" defer></script>
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&display=swap&subset=cyrillic" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div id="app">
+        <h1>Hello, {{ name.toLowerCase() }}, {{ upperCasedName }}</h1>
+        <p v-show="name.length > 5">{{ name }}!</p>
+        <span v-else-if="name.length === 3">length = 3</span>
+        <span v-else>length = 0</span>
+        <ul>
+            <li v-for="item in items">
+                <span>
+                    {{ toUpperCase(item) }}
+                </span>
+            </li>
+        </ul>
+        <div>{{ fullName }}</div>
+        <input type="text" v-model.lazy="name" /><br />
+        <input type="text" @keydown="doSomething" v-model="lastName" /><br />
+        <button v-on:click.prevent="doSomething">Click me!</button>
+    </div>
+</body>
+</html>

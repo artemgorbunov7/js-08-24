@@ -45,21 +45,30 @@ const API_URL = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-sto
 class GoodsList {
     constructor() {
         this.goods = [];
+        this.filteredGoods = [];
     }
+    filterGoods(value) {
+        const regexp = new RegExp(value, 'i');
+        this.filteredGoods = this.goods.filter(good => regexp.test(good.product_name));
+        this.render();
+    }
+    
     fetchGoods(cb) {
         makeGETRequest(`${API_URL}/catalogData.json`, (goods) => {
             this.goods = JSON.parse(goods);
+            this.filteredGoods = JSON.parse(goods);
             cb();
         })
     }
     render() {
         let listHtml = '';
-        this.goods.forEach(good => {
-            const goodItem = new GoodsItem(good.product_name, good.price);
-            listHtml += goodItem.render();
+        this.filteredGoods.forEach(good => {
+          const goodItem = new GoodsItem(good.product_name, good.price);
+          listHtml += goodItem.render();
         });
-        document.querySelector('.goods-list').innerHTML = listHtml.join('');
-    }
+        document.querySelector('.goods-list').innerHTML = listHtml;
+      }
+
     //метод, определяющий суммарную стоимость всех товаров.
     getSumPriceGoods() {
         let sumPrice = 0;
@@ -70,10 +79,16 @@ class GoodsList {
     }
 }
 
+searchButton.addEventListener('click', (e) => {
+    const value = searchInput.value;
+    list.filterGoods(value);
+  });
+
 const list = new GoodsList();
 list.fetchGoods(() => {
     list.render();
 });
+
 
 //пустые классы для корзины товаров и элемента корзины товаров.
 class Basket {

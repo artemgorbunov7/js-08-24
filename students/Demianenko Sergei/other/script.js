@@ -1,86 +1,165 @@
-//Класс каталога
-class GoodsList {
-  constructor (container = ".goods-list"){
-    this.container = container;
-    this.data =[];
-    this.goods = [];
-    this.init();
+const API = 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses';
+
+function sendRequest(url) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest;
+  
+    xhr.onreadystatechange = () => {
+        if (xhr.readyState === 4) {
+
+          if (xhr.status === 200) {
+            resolve(JSON.parse(xhr.responseText));
+          } else {
+            reject(xhr.responseText);
+          }
+
+        }
+    }
+
+    xhr.open('GET', `${API}${url}`, true);
+  
+    xhr.send();
+  });
+}
+
+class GoodsItem {
+  constructor({ id_product, product_name, price }) {
+    this.id = id_product;
+    this.title = product_name;
+    this.price = price;
   }
-  init(){
-    this.getGoods();
+
+  render() {
+    return `
+      <div class="goods-item" data-id="${this.id}">
+        <h3>${this.title}</h3>
+        <p>${this.price} руб.</p>
+        <button name="add-to-basket">Buy</button>
+      </div>
+    `;
+  }
+}
+
+class GoodsList {
+  constructor(basket) {
+    this.basket = basket;
+    this.goods = [];
+    this.filteredGoods = [];
+    this.fetchGoods()
+      .then(() => {
+        this.render();
+      })
+      .catch((err) => {
+        console.log('[ERROR]', err);
+      });
+
+    document.querySelector('.goods-list').addEventListener('click', (event) => {
+      if (event.target.name === 'add-to-basket') {
+        const id = event.target.parentElement.dataset.id;
+        const item = this.goods.find((goodsItem) => goodsItem.id_product === parseInt(id));
+        this.basket.addItem(item);
+      }
+    });
+
+    document.querySelector('.search').addEventListener('input', (event) => {
+      this.filterGoods(event.target.value);
+    });
+  }
+
+  fetchGoods() {
+    return new Promise((resolve, reject) => {
+      sendRequest('/catalogData.json')
+        .then((goods) => {
+          this.goods = goods;
+          this.filteredGoods = goods;
+          resolve();
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  }
+
+  total() {
+    return this.goods.reduce((acc, cur) => acc + cur.price, 0);
+  }
+
+  filterGoods(value) {
+    const regexp = new RegExp(value, 'i');
+    this.filteredGoods = this.goods.filter(item => regexp.test(item.product_name));
     this.render();
   }
 
-getGoods(){
-  this.data = [
-    { id: 1, title: 'Shirt', price: 150 },
-    { id: 2, title: 'Socks', price: 50 },
-    { id: 3, title: 'Jacket', price: 350 },
-    { id: 4, title: 'Shoes', price: 250 },
-  ];
-}
-render(){
-const block =document.querySelector(this.container);
-for (let item of this.data){
-  const product = new GoodsItem (item);
-  this.goods.push(product);
-  block.insetrAdjacentHTML ("beforeend", product.render());
+  render() {
+    const goodsList = this.filteredGoods.map(item => {
+      const goodsItem = new GoodsItem(item);
+      return goodsItem.render();
+    });
+    document.querySelector('.goods-list').innerHTML = goodsList.join('');
   }
 }
-//Метод сумарной стоимости
-GoodsSum(){
-  let sum = 0;
-  for (let item of this.goods){
-    sum +=item.price;
-  }
-  return sum;
-  } 
-} 
-// Класс каталог
 
-class GoodsItem {
-  constructor(product, img){
-    this.id = product.id;
-    this.title = product.title;
-    this.price = product.price;
-    this.img = img;
+class Basket {
+  constructor() {
+    this.goods = [];
   }
-  render(){
-    return  `<div class="product-item">
-    <img src="${this.img}" alt="${this.title}">
-    <div class="desc">
-        <h3>${this.title}</h3>
-        <p class="price-text">${this.price} руб. </p>
-        <button class="buy-btn">Купить</button>
-        </div>
-        </div>`;
-    }
-}
- //Класс корзина
- class Cart {
-   constructor(){
-     this.cartGoods = [];
-     this.container = this.container;
 
-   }
-   cartText(){}
-   cartPrice(){}
-   cartCount(){}
-   addProduct (id, quantity = 1){}
-   removeProduct(id, quantity =1){}
-   ClearCart(){}
-   render(){}
- }
- //Класс элемент корзины
-  class CartItem {
-    constructor(product, img){
-      this.id;
-      this.title;
-      this.price;
-      this.quantity;
-      this.sum;
-      this.img;
-    }
-    render(){}
+  fetchGoods() {
+
   }
-  const goods = new GoodsList();
+
+  addItem(item) {
+    const itemIndex = this.goods.findIndex((goodsItem) => goodsItem.id_product === item.id_product);
+    if (itemIndex !== -1) {
+      this.goods[itemIndex].quantity++;
+    } else {
+      this.goods.push({ ...item, quantity: 1 });
+    }
+    console.log(this.goods);
+  }
+
+  removeItem(id) {
+    const itemIndex = this.goods.findIndex((goodsItem) => goodsItem.id_product === id);
+    if (itemIndex !== -1) {
+      this.goods.splice(itemIndex, 1);
+    }
+  }
+
+  getBasketItems() {
+    return this.goods;
+  }
+
+  total() {
+
+  }
+
+  render() {
+
+  }
+}
+
+class BasketItem {
+  constructor(item, basket) {
+    this.item = item;
+    this.basket = basket;
+  }
+
+  addItem() {
+    this.basket.addItem(this.item.id);
+  }
+
+  removeItem() {
+    this.basket.removeItem(this.item.id);
+  }
+
+  add() {
+    this.item.quantity += 1;
+  }
+
+  render() {
+
+  }
+}
+
+const basket = new Basket();
+const goodsList = new GoodsList(basket);
