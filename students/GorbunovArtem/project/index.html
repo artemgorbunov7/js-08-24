@@ -3,15 +3,51 @@
 <html>
 <head>
   <title>eShop</title>  
-  <script src="js/script.js"></script>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>eShop</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js" defer></script>
+  <script src="js/script.js" defer></script>
+  <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&display=swap&subset=cyrillic" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
-  <header>
-      <button type="button" class="cart-button">Корзина</button>
-  </header>
-  <main>
-      <div class="goods-list"></div>
-  </main>
+  <div id="app">
+      <header>
+          <button type="button" class="cart-button" onclick="showHide('basket-table')">Корзина</button>
+
+          <table id="basket-table" class="basket-list" v-if="basket.length !== 0" :basket="basket" :sumGoods="sumGoods">
+            <tr class="titel-tbl" v-for="item_basket in basket">
+                <td>Товар</td>
+                <td>Цена</td>
+                <td></td>
+            </tr>
+            <tr v-for="item_basket in basket"></tr>
+              <td>{{ item_basket.title }}</td>
+              <td>{{ item_basket.price }}</td>
+              <td><a class="del-btn" @click="$emit('delete-product', item_basket)">&times;</a></td>
+          </tr>
+            <tr class="titel-tbl">
+              <td>Cумма товара</td>
+              <td >{{sumGoods}}</td>
+              <td></td>
+            </tr>
+        </table>
+          <input type="text" class="search" v-model="searchText" />
+          <a href="feedback/validation.html"> Обратная связь </a>
+      </header>
+      <main>
+        <div v-if="goods.length !== 0" class="goods-list">
+              <div class="goods-item" v-for="item in filteredGoods">
+                  <h3>{{ item.product_name }}</h3>
+                  <p>{{ item.price }}</p>
+                  <button name="add-to-basket" class="cart-button">Buy</button>
+              </div>
+          </div>
+          <div v-else class="goods-list">
+            <span>Нет данных</span>
+          </div>
+      </main>
+  </div>
 </body>
 </html>

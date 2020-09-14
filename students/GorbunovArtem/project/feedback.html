@@ -3,29 +3,53 @@
 <html>
 <head>
   <title>eShop</title>  
-  <script src="js/script.js"></script>
+  <script src="js/feedback.js" defer></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-  <div id="container" >
-       <p class="name">
-       <input id ="name" type="text" name="name" value="Имя автора" />
-             <label for="name">Имя</label>
-       </p>
-       <p class="mobile">
-        <input id ="mobile" type="text" name="Mobile" value="+71234567890" />
-            <label for="mobile" >Mobile Phone</label>
-       </p>
-     <p class="email">
-       <input id ="email" type="text" name="email" value="name@example.com" />
-           <label for="email" >E-Mail</label>
-      </p>
-      <p class="msg">
-       <textarea id ="message" name="msg">Текст сообщения</textarea>
-        </p>
-        <p class="send" >
-          <button id="sendBut">отправить</button>
-     </p>
+  <div class="wrap">
+    <h1>Форма обратной связи</h1>
+    <form id="feedback" name="feedback" method="POST">
+      <ul class="form-list form-list_contact">
+        <li>
+          <label>Ваше имя:</label>
+          <div>
+            <input class="form-control" type="text" name="username" maxlength="30" value="">
+          </div>
+          <span class="error"></span>
+        </li>
+        <li>
+          <label>Электронная почта:</label>
+          <div>
+            <input class="form-control" type="text" name="usermail" maxlength="50" value="">
+          </div>
+          <span class="error"></span>
+        </li>
+        <li>
+          <label>Мобильный телефон:</label>
+          <div>
+            <input class="form-control" type="text" name="usermobile" maxlength="11" value="">
+          </div>
+          <span class="error"></span>
+        </li>
+        <li>
+          <label>Текст сообщения:</label>
+          <div>
+            <textarea class="form-control" name="textmess"></textarea>
+          </div>
+          <span class="error"></span>
+        </li>
+        <li>
+          <label></label>
+          <div>
+            <button id="send_mess" type="submit">Отправить</button>
+          </div>
+        </li>
+      </ul>
+    </form>
   </div>
+  
+  <script src="js/feedback.js"></script>
   </body>
 </html>
