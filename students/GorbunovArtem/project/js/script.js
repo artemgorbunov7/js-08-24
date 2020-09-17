@@ -22,158 +22,39 @@ function sendRequest(url) {
   });
 }
 
-function showHide(element_id) {
-  if (document.getElementById(element_id)) { 
-      var obj = document.getElementById(element_id); 
-      if (obj.style.display != "block") { 
-          obj.style.display = "block"; 
-      }
-      else obj.style.display = "none"; 
-  }
-}   
-/*
-class GoodsItem {
-  constructor({ id_product, product_name, price }) {
-    this.id = id_product;
-    this.title = product_name;
-    this.price = price;
-  }
+Vue.component('goods-list', {
+  props: ['goods'],
+  template: `
+  <div v-if="!goods.lenght" class="goods-list">
+    <div class="goods-item" v-for="item in goods" v-bind:key="item.id_product">
+      <h3>{{ item.product_name }}</h3>
+      <p>{{ item.price }}</p>
+      <button @click="addToBasket(item)" class="cart-button">Buy</button>
+    </div>
+  </div>
+  <div v-else class="goods-list__empty">Нет данных</div>
+  `
+})
 
-  render() {
-    return `
-      <div class="goods-item" data-id="${this.id}">
-        <h3>${this.title}</h3>
-        <p>${this.price}</p>
-        <button name="add-to-basket">Buy</button>
+Vue.component('basket', {
+  props: ['basket'],
+  template: `
+    <div v-if="isBasketVisible" class="basket">
+      <div class ="basket-item" v-for="basketItem in basket" v-bind:key="basket.id_product">
+        <h3>{{ basketItem.product_name }}</h3>
+        <p>{{ basketItem.price }}</p>
+      <button @click="removeFromBasket(basketItem.id_product)" class="cart-button">Удалить</button>
       </div>
-    `;
-  }
-}
+      </div>
+  `
+});
 
-class GoodsList {
-  constructor(basket) {
-    this.basket = basket;
-    this.goods = [];
-    this.filteredGoods = [];
-    this.fetchGoods()
-      .then(() => {
-        this.render();
-      })
-      .catch((err) => {
-        console.log('[ERROR]', err);
-      });
-
-    document.querySelector('.goods-list').addEventListener('click', (event) => {
-      if (event.target.name === 'add-to-basket') {
-        const id = event.target.parentElement.dataset.id;
-        const item = this.goods.find((goodsItem) => goodsItem.id_product === parseInt(id));
-        this.basket.addItem(item);
-      }
-    });
-
-    document.querySelector('.search').addEventListener('input', (event) => {
-      this.filterGoods(event.target.value);
-    });
-  }
-
-  fetchGoods() {
-    return new Promise((resolve, reject) => {
-      sendRequest('/catalogData.json')
-        .then((goods) => {
-          this.goods = goods;
-          this.filteredGoods = goods;
-          resolve();
-        })
-        .catch((err) => {
-          reject(err);
-        });
-    });
-  }
-
-  total() {
-    return this.goods.reduce((acc, cur) => acc + cur.price, 0);
-  }
-
-  filterGoods(value) {
-    const regexp = new RegExp(value, 'i');
-    this.filteredGoods = this.goods.filter(item => regexp.test(item.product_name));
-    this.render();
-  }
-
-  render() {
-    const goodsList = this.filteredGoods.map(item => {
-      const goodsItem = new GoodsItem(item);
-      return goodsItem.render();
-    });
-    document.querySelector('.goods-list').innerHTML = goodsList.join('');
-  }
-}
-
-class Basket {
-  constructor() {
-    this.goods = [];
-  }
-
-  fetchGoods() {
-
-  }
-
-  addItem(item) {
-    const itemIndex = this.goods.findIndex((goodsItem) => goodsItem.id_product === item.id_product);
-    if (itemIndex !== -1) {
-      this.goods[itemIndex].quantity++;
-    } else {
-      this.goods.push({ ...item, quantity: 1 });
-    }
-    console.log(this.goods);
-  }
-
-  removeItem(id) {
-    const itemIndex = this.goods.findIndex((goodsItem) => goodsItem.id_product === id);
-    if (itemIndex !== -1) {
-      this.goods.splice(itemIndex, 1);
-    }
-  }
-
-  getBasketItems() {
-    return this.goods;
-  }
-
-  total() {
-
-  }
-
-  render() {
-
-  }
-}
-
-class BasketItem {
-  constructor(item, basket) {
-    this.item = item;
-    this.basket = basket;
-  }
-
-  addItem() {
-    this.basket.addItem(this.item.id);
-  }
-
-  removeItem() {
-    this.basket.removeItem(this.item.id);
-  }
-
-  add() {
-    this.item.quantity += 1;
-  }
-
-  render() {
-
-  }
-}
-
-const basket = new Basket();
-const goodsList = new GoodsList(basket);
-*/
+Vue.component('search', {
+  props: ['value'],
+  template: `
+    <input type="text" class="search" v-model="searchText" v-bind:value="value""/>
+  `
+})
 
 const app = new Vue({
   el: '#app',
@@ -181,6 +62,8 @@ const app = new Vue({
     goods: [],
     searchText: '',
     basket: [],
+    isBasketVisible: false,
+    isError: false,
   },
 
   created() {
@@ -197,17 +80,6 @@ const app = new Vue({
       return this.goods.reduce((acc, cur) => acc + cur.price, 0);
     },
 
-    sumGoods: function () {
-      let sum = 0;
-      this.basket.forEach(({price}) => {
-          sum += price;
-      });
-      return this.sumGood = sum;
-    },
-
-    sumItem: function () {
-      return this.basket.length==0 ? '   ' :this.basket.length;
-    }
   },
 
   methods: {
@@ -220,29 +92,21 @@ const app = new Vue({
             resolve();
           })
           .catch((err) => {
+            this.isError = true;
             reject(err);
           });
       });
     },
 
-   
-    addProducts(good){
-      this.basket.push(good);
-      const itemIndex = this.goods.findIndex((goodsItem) => goodsItem.id_product === item.id_product);
-    if (itemIndex !== -1) {
-      this.goods[itemIndex].quantity++;
-    } else {
-      this.goods.push({ ...item, quantity: 1 });
-    }
-    console.log(this.goods);
-      },
+    
 
-    deleteProducts (good){
-      const itemIndex = this.goods.findIndex((goodsItem) => goodsItem.id_product === id);
-    if (itemIndex !== -1) {
-      this.goods.splice(itemIndex, 1);
-    }
-     
-  },
+    addToBasket(item){
+      this.basket.push(item);
+      },
+    
+    removeFromBasket(id){
+      this.basket = this.basket.filter(({ id_product })=>id_product !== id);
+    },
+
   },
 });

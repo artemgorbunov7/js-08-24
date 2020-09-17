@@ -1,49 +1,75 @@
 /* цвета подобраны https://colorscheme.ru/ */
+*, *::after, *::before {
+    box-sizing: border-box;
+}
+.search{
+    margin: 10px;
+    position: relative;
+}
 
 body {
     background-color: #BF8F30;
     margin: 0 auto;
+    font: normal 16px Roboto, Verdana, sans-serif;
+    line-height: 20px;
+    color: #333;
+    -webkit-text-size-adjust: none;
 }
 
 header {
     background-color: #FFA900;
-    min-height: 60px;
+    display: flex;
+    flex-direction: row-reverse;
+    padding: 20px;
+    box-shadow: 0 3px 6px rgba(0,0,0,.2);
 }
 .cart-button {
     border: none;
     border-radius: 20px;
-    padding: 10px 20px;
-    margin: 10px;
-    float: right;
+    padding: 7px 20px;
     background: #FFBE40;
     font-size: 16px;
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
     color: #fff;
+    text-decoration: none;
+    margin: 10px;
 	
 }
 .cart-button:hover {
+    border: none;
     background-color: #A66E00;
 }
 
 .cart-button:active {
+    border: none;
     background-color: #FFCF73;
     color: #A66E00	;
 }
 
-.goods-list {
-    margin-top: 50px;
-    display: flex;
-    justify-content: space-around;
+.basket{
+    background-color: #A66E00;
+    position: absolute;
+    padding: 10px;
+    box-shadow: 0 3px 6px rgba(0,0,0,.2);
+    top: 70px;
 }
 
+.goods-list {
+    width: 70%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
 
 .goods-item {
     box-shadow: 0 3px 6px rgba(0,0,0,.2);
     flex-basis: calc(25% - 40px);
-    text-align: center;
-	border-radius: 5px;
+    margin: 20px;
+    border-radius: 5px;
+    padding: 10px;
 }
 
 ol, ul {
@@ -51,12 +77,6 @@ ol, ul {
     display: block;
 }
 
-body {
-    font: normal 16px Roboto, Verdana, sans-serif;
-    line-height: 20px;
-    color: #333;
-    -webkit-text-size-adjust: none;
-}
 
 h1 {
     font-weight: 500;
@@ -79,7 +99,7 @@ p {
     font-family: inherit;
 }
 
-/* form */
+/* feedback form */
 button {
     text-align: center;
     border: none;
@@ -143,6 +163,4 @@ textarea {
 	.error {left: 0;}
 }
 
-.basket-list{
-    display: none;
-}
+
