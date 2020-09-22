@@ -7,6 +7,7 @@
     >
       <h4>{{ basketItem.name }}</h4>
       <p>{{ basketItem.price }}</p>
+      <p>Количество: {{ basketItem.quantity }}</p>
       <button @click="$emit('remove-item', basketItem.id)">Удалить</button>
     </div>
   </div>

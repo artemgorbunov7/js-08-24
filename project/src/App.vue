@@ -28,12 +28,14 @@ export default {
     Search,
     Basket,
   },
-  data() {
+  data() { 
     return {
       goods: [],
       basket: [],
       isBasketVisible: false,
       searchText: "",
+      firstName: '',
+      lastName: '',
     };
   },
   created() {
@@ -47,6 +49,16 @@ export default {
     },
     total() {
       return this.goods.reduce((acc, cur) => acc + cur.price, 0);
+    },
+    fullName: {
+      get () {
+        return [this.lastName, this.firstName].join(' ');
+      },
+      set (value) {
+        const [last, first] = value.split(' ');
+        this.lastName = last;
+        this.firstName = first;
+      }
     },
   },
   methods: {
@@ -64,6 +76,15 @@ export default {
             reject(err);
           });
       });
+    },
+    async newFetchGoods() {
+      try {
+        const res = await fetch(`${API}/data`);
+        const goods = await res.json();
+        this.goods = goods;
+      } catch (err) {
+        console.log('error', err);
+      }
     },
     fetchBasket() {
       return new Promise((resolve, reject) => {
@@ -89,14 +110,31 @@ export default {
         }
       })
         .then(() => {
-          this.basket.push(item);
+          const itemIndex = this.basket.findIndex(({ id }) => id === item.id);
+          if (itemIndex > -1) {
+              this.basket[itemIndex].quantity++;
+          } else {
+              this.basket.push({ ...item, quantity: 1 });
+          }
         })
         .catch((err) => {
           console.log(err);
         });
     },
     removeFromBasket(removedId) {
-      this.basket = this.basket.filter(({ id }) => id !== removedId);
+
+      fetch(`${API}/removeFromCart/${removedId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(() => {
+          this.basket = this.basket.filter(({ id }) => id !== removedId);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     handleBasketToggle() {
       this.isBasketVisible = !this.isBasketVisible;

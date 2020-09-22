@@ -6,13 +6,12 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "start": "nodemon server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "core-js": "^3.6.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "nodemon": "^2.0.4",
     "vue": "^2.6.11"
   },
   "devDependencies": {

@@ -1,0 +1,37 @@
+[
+  {
+    "good": "Коврик",
+    "data": {
+      "2020-9-20": {
+        "Item added to cart!": 3,
+        "Item removed from cart!": 3
+      }
+    }
+  },
+  {
+    "good": "Наушники",
+    "data": {
+      "2020-9-20": {
+        "Item added to cart!": 2
+      }
+    }
+  },
+  {
+    "good": "Кресло",
+    "data": {
+      "2020-9-20": {
+        "Item added to cart!": 2,
+        "Item removed from cart!": 1
+      }
+    }
+  },
+  {
+    "good": "Колонки",
+    "data": {
+      "2020-9-20": {
+        "Item added to cart!": 3,
+        "Item removed from cart!": 3
+      }
+    }
+  }
+]

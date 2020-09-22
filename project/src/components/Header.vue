@@ -8,8 +8,13 @@
 <script>
 export default {
     name: 'Header',
-    props: {
-        basket: Array,
+    created() {
+        this.$eventBus.$on('button-click', this.handleButtonClick);
+    },
+    methods: {
+        handleButtonClick(payload) {
+            console.log('handleButtonClick', payload);
+        }
     }
 };
 </script>

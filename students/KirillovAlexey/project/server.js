@@ -2,12 +2,22 @@ const fs = require('fs');
 const cors = require('cors');
 
 const express = require('express');
-const e = require('express');
 const app = express();
 
 app.use(express.static('./static'));
 app.use(express.json());
 app.use(cors());
+
+function getCartObj() {
+    return new Promise(function (resolve, reject) {
+        fs.readFile('./cart.json', 'utf-8',function (err, data) {
+            if (err)
+                reject(err);
+            else
+                resolve(JSON.parse(data));
+        });
+    });
+}
 
 app.get('/data', (request, response) => {
     fs.readFile('./catalog.json', 'utf-8', (err, data) => {
@@ -37,6 +47,18 @@ app.get('/cart', (request, response) => {
     });
 });
 
+app.get('/removeItem/:id',(request,response) =>{
+    getCartObj().then((cart) => {
+        cart = cart.filter(({id_product}) => id_product != request.params.id);
+        fs.writeFile('./cart.json', JSON.stringify(cart), (err) => {
+            if (err) {
+                return;
+            }
+            response.send('OK');
+        });
+    });
+});
+
 app.post('/addToCart', (request, response) => {
     fs.readFile('./cart.json', 'utf-8', (err, data) => {
         if (err) {
@@ -45,12 +67,7 @@ app.post('/addToCart', (request, response) => {
         }
 
         const cart = JSON.parse(data);
-        const itemIndex = cart.findIndex(({ id }) => id === request.body.id);
-        if (itemIndex > -1) {
-            cart[itemIndex].quantity++;
-        } else {
-            cart.push({ ...request.body, quantity: 1 });
-        }
+        cart.push(request.body);
 
         fs.writeFile('./cart.json', JSON.stringify(cart), (err) => {
             if (err) {
@@ -61,24 +78,7 @@ app.post('/addToCart', (request, response) => {
     });
 });
 
-app.delete('/removeFromCart/:id', (request, response) => {
-    fs.readFile('./cart.json', 'utf-8', (err, data) => {
-        if (err) {
-            console.log('Something goes wrong');
-            return;
-        }
 
-        let cart = JSON.parse(data);
-        cart = cart.filter(( { id } ) => id !== parseInt(request.params.id));
-
-        fs.writeFile('./cart.json', JSON.stringify(cart), (err) => {
-            if (err) {
-                return;
-            }
-            response.send('OK');
-        });
-    });
-});
 
 app.listen(3000, () => {
     console.log('Server is listening port 3000');

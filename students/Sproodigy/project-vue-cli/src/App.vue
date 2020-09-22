@@ -9,7 +9,7 @@
       <Cart v-show="isVisibleCart" :cart="cart">
         <CartItem
           v-for="item in cart"
-          :key="item.id_product"
+          :key="item.id"
           :item="item"
         />
       </Cart>
@@ -18,8 +18,8 @@
       <GoodsList :filteredGoods="filteredGoods">
         <GoodsItem
           v-for="item in filteredGoods"
-          :key="item.id_product"
-          :id="item.id_product"
+          :key="item.id"
+          :id="item.id"
           :item="item"
           @add-to-cart="addToCart"
           @remove-from-cart="removeFromCart"
@@ -36,8 +36,11 @@
     name: 'App',
     data() {
       return {
-        API_URL: 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses',
-        API_URL_CATALOG: 'catalogData.json',
+        API_URL: 'http://localhost:3000',
+        API_URL_GET_CATALOG: 'catalog',
+        API_URL_GET_CART: 'cart',
+        API_URL_POST_CART: 'addToCart',
+        API_URL_REMOVE_FROM_CART: 'removeFromCart',
         goods: [],
         filteredGoods: [],
         cart: [],
@@ -48,6 +51,7 @@
     },
     created() {
       this.fetchGoods()
+      this.fetchCart()
     },
     computed: {
       totalPrice() {
@@ -62,13 +66,21 @@
     },
     methods: {
       fetchGoods() {
-        fetch(`${this.API_URL}/${this.API_URL_CATALOG}`)
+        fetch(`${this.API_URL}/${this.API_URL_GET_CATALOG}`)
           .then(goods => goods.json())
           .then(goods => this.goods = goods)
           .then(goods => this.filteredGoods = goods)
           .catch(err => {
             console.log(err)
             this.isError = true
+          })
+      },
+      fetchCart() {
+        fetch(`${this.API_URL}/${this.API_URL_GET_CART}`)
+          .then(goods => goods.json())
+          .then(goods => this.cart = goods)
+          .catch(err => {
+            console.log(err)
           })
       },
       filterGoods() {
@@ -79,20 +91,31 @@
       },
       addToCart(event) {
         const matchId = parseInt(event.target.parentElement.id)
-        const matchGood = this.goods.find(good => good.id_product === matchId)
-        const itemIndex = this.cart.findIndex((good) => good.id_product === matchId);
+        const matchGood = this.goods.find(good => good.id === matchId)
 
-        if (itemIndex !== -1) {
-          this.cart[itemIndex].quantity++;
-        } else {
-          this.cart.push({ ...matchGood, quantity: 1 });
-        }
+        fetch(`${this.API_URL}/${this.API_URL_POST_CART}`, {
+          method: 'POST',
+          body: JSON.stringify(matchGood),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(() => this.fetchCart())
+        .catch(err => console.log('Error while post good: ', err))
       },
       removeFromCart(event) {
         const matchId = parseInt(event.target.parentElement.id)
-        const itemIndex = this.cart.findIndex((good) => good.id_product === matchId);
-        if (itemIndex !== -1) this.cart.splice(itemIndex, 1)
+        const matchGood = this.goods.find(good => good.id === matchId)
 
+        fetch(`${this.API_URL}/${this.API_URL_REMOVE_FROM_CART}`, {
+          method: 'DELETE',
+          body: JSON.stringify(matchGood),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(() => this.fetchCart())
+        .catch(err => console.log('Error while delete good: ', err))
       },
       showCart() {
         this.isVisibleCart = !this.isVisibleCart

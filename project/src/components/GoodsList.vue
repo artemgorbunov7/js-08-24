@@ -4,7 +4,7 @@
             <div class="goods-item" v-for="item in goods" v-bind:key="item.id">
                 <h3>{{ item.name }}</h3>
                 <p>{{ item.price }}</p>
-                <button @click="$emit('add-item', item)">Buy</button>
+                <button @click="handleButtonClick(item)">Buy</button>
             </div>
         </div>
         <div v-else class="goods-list__empty">Нет данных</div>
@@ -17,6 +17,11 @@ export default {
     props: {
         goods: Array,
     },
+    methods: {
+        handleButtonClick(item) {
+            this.$eventBus.$emit('button-click', item);
+        }
+    }
 }
 </script>
 
